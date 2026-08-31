@@ -1,0 +1,303 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+/* ─── Design Tokens (Griffin-accurate) ─── */
+@theme {
+  /* True black palette */
+  --color-black-950: #000000;
+  --color-black-900: #0A0A0A;
+  --color-black-800: #111111;
+  --color-black-700: #1A1A1A;
+  --color-black-600: #222222;
+
+  /* Border tokens — neutral gray, not navy-tinted */
+  --color-border-subtle: #1A1A1A;
+  --color-border-default: #2A2A2A;
+  --color-border-strong: #3A3A3A;
+
+  /* Text hierarchy */
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #999999;
+  --color-text-tertiary: #666666;
+  --color-text-muted: #444444;
+
+  /* Accent — used sparingly */
+  --color-mint-400: #4ADE80;
+  --color-mint-500: #22C55E;
+  --color-amber-400: #FBBF24;
+  --color-amber-500: #F59E0B;
+
+  /* Fonts */
+  --font-serif: 'Fraunces', 'Playfair Display', 'Georgia', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-pill: 999px;
+}
+
+/* ─── Global Fixes ─── */
+@layer base {
+  section, footer, main, header, nav, article, aside {
+    display: block;
+  }
+
+  /* ─── Base Styles ─── */
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-black-900);
+    color: #CCCCCC;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+}
+
+/* ─── Typography: Serif Display ─── */
+.text-display {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: #fff;
+  font-optical-sizing: auto;
+}
+
+.text-heading {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.text-heading-sm {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 1.125rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+
+/* ─── Typography: Monospace UI ─── */
+.text-mono-ui {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.text-label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.625rem;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+/* ─── Typography: Body (sans-serif) ─── */
+.text-body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--color-text-secondary);
+}
+
+.text-body-sm {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+/* ─── Typography: Mono data ─── */
+.text-mono {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+/* ─── Card Pattern ─── */
+.card {
+  background: var(--color-black-800);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+}
+
+.card-hover {
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.card-hover:hover {
+  border-color: var(--color-border-strong);
+  background: #161616;
+}
+
+/* ─── Section Divider ─── */
+.section-border {
+  border-top: 1px solid var(--color-border-default);
+}
+
+/* ─── Code Block ─── */
+.code-block {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  background: #080808;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  overflow-x: auto;
+  color: var(--color-text-secondary);
+}
+
+.code-block .key {
+  color: var(--color-text-tertiary);
+}
+
+.code-block .string {
+  color: var(--color-mint-400);
+}
+
+.code-block .number {
+  color: var(--color-amber-400);
+}
+
+.code-block .boolean {
+  color: #93C5FD;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ─── Leaflet Overrides ─── */
+.leaflet-container {
+  background: var(--color-black-900) !important;
+  border-radius: var(--radius-lg);
+}
+
+.leaflet-control-zoom a {
+  background: var(--color-black-800) !important;
+  color: var(--color-text-secondary) !important;
+  border-color: var(--color-border-default) !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(0, 0, 0, 0.85) !important;
+  color: var(--color-text-muted) !important;
+  font-size: 10px !important;
+}
+
+.leaflet-control-attribution a {
+  color: var(--color-text-tertiary) !important;
+}
+
+/* ─── Leaflet tooltip ─── */
+.leaflet-tooltip {
+  background: var(--color-black-800) !important;
+  border: 1px solid var(--color-border-default) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  border-radius: 6px !important;
+  padding: 6px 10px !important;
+}
+
+.leaflet-tooltip-top::before {
+  border-top-color: var(--color-border-default) !important;
+}
+
+/* ─── Animations ─── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes glyph-drift {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  15% {
+    opacity: 0.12;
+  }
+  85% {
+    opacity: 0.12;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+.animate-glyph {
+  animation: glyph-drift var(--duration, 8s) var(--delay, 0s) ease-in-out infinite;
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #fff;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ─── Focus Ring ─── */
+:focus-visible {
+  outline: 2px solid rgba(74, 222, 128, 0.4);
+  outline-offset: 2px;
+}
