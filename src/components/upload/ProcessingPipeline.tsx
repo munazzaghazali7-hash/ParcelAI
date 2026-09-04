@@ -10,64 +10,87 @@ interface ProcessingPipelineProps {
 }
 
 export const ProcessingPipeline: React.FC<ProcessingPipelineProps> = ({ steps }) => {
-  const getStepColor = (status: PipelineStep['status']) => {
+  const getColor = (status: PipelineStep['status']) => {
     switch (status) {
-      case 'done': return '#4ADE80';
-      case 'active': return '#FBBF24';
-      case 'pending': return 'var(--color-stone-500)';
+      case 'done':    return '#4ADE80';
+      case 'active':  return '#FBBF24';
+      case 'pending': return 'var(--color-stone-600)';
     }
   };
 
-  const getLineColor = (currentStatus: PipelineStep['status']) => {
-    return currentStatus === 'done' ? '#4ADE80' : 'var(--color-border-default)';
+  const getIcon = (status: PipelineStep['status'], idx: number) => {
+    if (status === 'done') {
+      return (
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+          <polyline points="2,6 5,9 10,3" stroke="#4ADE80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      );
+    }
+    if (status === 'active') {
+      return (
+        <div
+          className="w-2 h-2 rounded-full animate-pulse"
+          style={{ background: '#FBBF24' }}
+        />
+      );
+    }
+    return (
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--color-stone-600)' }}>
+        {String(idx + 1).padStart(2, '0')}
+      </span>
+    );
   };
 
   return (
-    <div className="flex items-center w-full">
+    <div className="grid grid-cols-2 gap-x-6 gap-y-0">
       {steps.map((step, i) => (
-        <React.Fragment key={i}>
-          {/* Step */}
-          <div className="flex flex-col items-center gap-2.5 flex-shrink-0">
-            {/* Number + Dot */}
-            <div className="flex items-center gap-2">
-              <span
-                className="text-xs font-medium"
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  color: getStepColor(step.status),
-                  opacity: step.status === 'pending' ? 0.5 : 1,
-                }}
-              >
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <div
-                className={`w-2.5 h-2.5 rounded-full ${step.status === 'active' ? 'animate-pulse-dot' : ''}`}
-                style={{ background: getStepColor(step.status) }}
-              />
-            </div>
-
-            {/* Label */}
-            <span
-              className="text-xs font-medium text-center whitespace-nowrap"
-              style={{
-                fontFamily: 'var(--font-sans)',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-                color: step.status === 'pending' ? 'var(--color-stone-500)' : 'var(--color-stone-200)',
-              }}
-            >
-              {step.label}
-            </span>
+        <div
+          key={i}
+          className="flex items-center gap-2.5 py-2"
+          style={{
+            borderBottom: i < steps.length - 2
+              ? '1px solid rgba(255,255,255,0.04)'
+              : 'none',
+          }}
+        >
+          {/* Icon circle */}
+          <div
+            className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{
+              background: step.status === 'done'
+                ? 'rgba(74,222,128,0.12)'
+                : step.status === 'active'
+                ? 'rgba(251,191,36,0.12)'
+                : 'rgba(255,255,255,0.04)',
+              border: `1px solid ${
+                step.status === 'pending'
+                  ? 'rgba(255,255,255,0.08)'
+                  : getColor(step.status) + '40'
+              }`,
+              transition: 'all 0.3s ease',
+            }}
+          >
+            {getIcon(step.status, i)}
           </div>
 
-          {/* Connector line */}
-          {i < steps.length - 1 && (
-            <div
-              className="flex-grow h-px mx-3 mt-[-18px]"
-              style={{ background: getLineColor(step.status) }}
-            />
-          )}
-        </React.Fragment>
+          {/* Label */}
+          <span
+            style={{
+              fontSize: '11px',
+              fontFamily: 'var(--font-mono)',
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              color: step.status === 'pending'
+                ? 'var(--color-stone-600)'
+                : step.status === 'active'
+                ? '#FBBF24'
+                : 'var(--color-stone-300)',
+              transition: 'color 0.3s ease',
+            }}
+          >
+            {step.label}
+          </span>
+        </div>
       ))}
     </div>
   );
