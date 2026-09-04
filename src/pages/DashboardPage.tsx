@@ -1,20 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { SectionLabel } from '../components/ui/SectionLabel';
 import { ParcelMap } from '../components/map/ParcelMap';
 import { ParcelDetailCard } from '../components/dashboard/ParcelDetailCard';
 import { DiscrepancyPanel } from '../components/dashboard/DiscrepancyPanel';
+import { fetchParcels, featureCollectionToParcels } from '../api/parcelApi';
+import type { Parcel } from '../data/mockParcels';
 import { mockParcels } from '../data/mockParcels';
 
 export const DashboardPage: React.FC = () => {
+  const location = useLocation();
+  const { job_id, filename } = (location.state as { job_id?: string; filename?: string }) || {};
+
+  const [parcels, setParcels] = useState<Parcel[]>(mockParcels);
+  const [loading, setLoading] = useState(true);
   const [selectedParcelId, setSelectedParcelId] = useState<string>(mockParcels[0].id);
 
-  const selectedParcel = mockParcels.find(p => p.id === selectedParcelId) || mockParcels[0];
+  useEffect(() => {
+    fetchParcels(job_id)
+      .then((fc) => {
+        const loaded = featureCollectionToParcels(fc) as Parcel[];
+        if (loaded.length > 0) {
+          setParcels(loaded);
+          setSelectedParcelId(loaded[0].id);
+        }
+      })
+      .catch(() => {
+        // Backend not available — fall back to mock data silently
+      })
+      .finally(() => setLoading(false));
+  }, [job_id]);
+
+  const selectedParcel = parcels.find(p => p.id === selectedParcelId) || parcels[0];
+  const flaggedParcels = parcels.filter(p => p.properties.discrepancy_flag);
 
   const stats = {
-    total: mockParcels.length,
-    verified: mockParcels.filter(p => p.properties.status === 'verified').length,
-    flagged: mockParcels.filter(p => p.properties.status === 'flagged').length,
-    pending: mockParcels.filter(p => p.properties.status === 'pending').length,
+    total: parcels.length,
+    verified: parcels.filter(p => p.properties.status === 'verified').length,
+    flagged: parcels.filter(p => p.properties.status === 'flagged').length,
+    pending: parcels.filter(p => p.properties.status === 'pending').length,
   };
 
   return (
@@ -26,9 +50,26 @@ export const DashboardPage: React.FC = () => {
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
               <h1 className="text-heading text-2xl">Parcel Map Dashboard</h1>
-              <p className="text-sm mt-1" style={{ color: 'var(--color-stone-400)' }}>
-                AI-extracted boundaries from uploaded drone imagery
-              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-sm" style={{ color: 'var(--color-stone-400)' }}>
+                  {loading
+                    ? 'Loading extracted boundaries…'
+                    : 'AI-extracted boundaries from uploaded drone imagery'}
+                </p>
+                {filename && !loading && (
+                  <span
+                    className="text-xs px-2 py-0.5 rounded"
+                    style={{
+                      background: 'rgba(74,222,128,0.08)',
+                      border: '1px solid rgba(74,222,128,0.2)',
+                      color: '#4ADE80',
+                      fontFamily: 'var(--font-mono)',
+                    }}
+                  >
+                    {filename}
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Stats bar */}
@@ -56,6 +97,7 @@ export const DashboardPage: React.FC = () => {
           {/* Map — 3 columns */}
           <div className="lg:col-span-3" style={{ minHeight: '500px' }}>
             <ParcelMap
+              parcels={parcels}
               selectedParcelId={selectedParcelId}
               onParcelSelect={setSelectedParcelId}
             />
@@ -63,12 +105,13 @@ export const DashboardPage: React.FC = () => {
 
           {/* Detail Card — 2 columns */}
           <div className="lg:col-span-2">
-            <ParcelDetailCard parcel={selectedParcel} />
+            {selectedParcel && <ParcelDetailCard parcel={selectedParcel} />}
           </div>
         </div>
 
         {/* Discrepancy Review Panel */}
         <DiscrepancyPanel
+          flaggedParcels={flaggedParcels}
           onReview={(id) => {
             setSelectedParcelId(id);
             window.scrollTo({ top: 0, behavior: 'smooth' });

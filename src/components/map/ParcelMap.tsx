@@ -2,35 +2,45 @@ import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import type { Layer, LeafletMouseEvent } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { getParcelGeoJSON, type Parcel } from '../../data/mockParcels';
+import type { Parcel } from '../../data/mockParcels';
 
 interface ParcelMapProps {
+  parcels: Parcel[];
   selectedParcelId: string | null;
   onParcelSelect: (parcelId: string) => void;
 }
 
-// Component to fit map bounds when parcels load
-const FitBounds: React.FC = () => {
+// Component to fit map bounds whenever the parcels change
+const FitBounds: React.FC<{ parcels: Parcel[] }> = ({ parcels }) => {
   const map = useMap();
 
   useEffect(() => {
-    const geojson = getParcelGeoJSON();
-    if (geojson.features.length > 0) {
-      const allCoords = geojson.features.flatMap(f =>
-        f.geometry.coordinates[0].map(c => [c[1], c[0]] as [number, number])
-      );
-      if (allCoords.length > 0) {
-        const latLngBounds = allCoords as [number, number][];
-        map.fitBounds(latLngBounds, { padding: [40, 40] });
-      }
+    if (parcels.length === 0) return;
+    const allCoords = parcels.flatMap(p =>
+      p.geometry.coordinates[0].map(c => [c[1], c[0]] as [number, number]),
+    );
+    if (allCoords.length > 0) {
+      map.fitBounds(allCoords as [number, number][], { padding: [40, 40] });
     }
-  }, [map]);
+  }, [map, parcels]);
 
   return null;
 };
 
-export const ParcelMap: React.FC<ParcelMapProps> = ({ selectedParcelId, onParcelSelect }) => {
-  const geojsonData = getParcelGeoJSON();
+export const ParcelMap: React.FC<ParcelMapProps> = ({ parcels, selectedParcelId, onParcelSelect }) => {
+  const geojsonData = {
+    type: 'FeatureCollection' as const,
+    features: parcels.map(parcel => ({
+      type: 'Feature' as const,
+      id: parcel.id,
+      geometry: parcel.geometry,
+      properties: {
+        id: parcel.id,
+        name: parcel.name,
+        ...parcel.properties,
+      },
+    })),
+  };
 
   const getStyle = (feature: GeoJSON.Feature | undefined) => {
     if (!feature) return {};
@@ -56,11 +66,7 @@ export const ParcelMap: React.FC<ParcelMapProps> = ({ selectedParcelId, onParcel
       },
       mouseover: (e: LeafletMouseEvent) => {
         const target = e.target;
-        target.setStyle({
-          fillOpacity: 0.3,
-          weight: 2.5,
-          opacity: 1,
-        });
+        target.setStyle({ fillOpacity: 0.3, weight: 2.5, opacity: 1 });
       },
       mouseout: (e: LeafletMouseEvent) => {
         const target = e.target;
@@ -77,11 +83,7 @@ export const ParcelMap: React.FC<ParcelMapProps> = ({ selectedParcelId, onParcel
       `<div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 2px 4px;">
         <strong>${props.id}</strong><br/>${props.name}
       </div>`,
-      {
-        className: 'parcel-tooltip',
-        direction: 'top',
-        offset: [0, -8],
-      }
+      { className: 'parcel-tooltip', direction: 'top', offset: [0, -8] },
     );
   };
 
@@ -98,12 +100,12 @@ export const ParcelMap: React.FC<ParcelMapProps> = ({ selectedParcelId, onParcel
           attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>'
         />
         <GeoJSON
-          key={selectedParcelId || 'default'}
+          key={`${selectedParcelId || 'default'}-${parcels.length}`}
           data={geojsonData as GeoJSON.FeatureCollection}
           style={getStyle}
           onEachFeature={onEachFeature}
         />
-        <FitBounds />
+        <FitBounds parcels={parcels} />
       </MapContainer>
     </div>
   );

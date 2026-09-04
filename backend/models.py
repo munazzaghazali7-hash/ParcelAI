@@ -57,7 +57,7 @@ class ProcessingStatus(BaseModel):
     job_id: str
     status: str  # uploading, orthomosaic_check, segmentation, done
     step: int
-    total_steps: int = 4
+    total_steps: int = 6
     parcels_detected: Optional[int] = None
     discrepancies: Optional[int] = None
 

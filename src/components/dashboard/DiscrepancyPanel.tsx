@@ -1,15 +1,14 @@
 import React from 'react';
 import { SectionLabel } from '../ui/SectionLabel';
 import { DiscrepancyCard } from './DiscrepancyCard';
-import { getFlaggedParcels } from '../../data/mockParcels';
+import type { Parcel } from '../../data/mockParcels';
 
 interface DiscrepancyPanelProps {
+  flaggedParcels: Parcel[];
   onReview?: (parcelId: string) => void;
 }
 
-export const DiscrepancyPanel: React.FC<DiscrepancyPanelProps> = ({ onReview }) => {
-  const flaggedParcels = getFlaggedParcels();
-
+export const DiscrepancyPanel: React.FC<DiscrepancyPanelProps> = ({ flaggedParcels, onReview }) => {
   if (flaggedParcels.length === 0) return null;
 
   return (
