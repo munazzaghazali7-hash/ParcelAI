@@ -1,10 +1,12 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'ghost' | 'accent';
   size?: 'sm' | 'md' | 'lg';
   as?: 'button' | 'a';
   href?: string;
+  to?: string;
   children: React.ReactNode;
 }
 
@@ -13,6 +15,7 @@ export const Button: React.FC<ButtonProps> = ({
   size = 'md',
   as = 'button',
   href,
+  to,
   children,
   className = '',
   ...props
@@ -32,6 +35,14 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   const classes = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`;
+
+  if (to) {
+    return (
+      <Link to={to} className={classes}>
+        {children}
+      </Link>
+    );
+  }
 
   if (as === 'a' && href) {
     return (
