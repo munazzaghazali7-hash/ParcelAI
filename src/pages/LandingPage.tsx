@@ -82,13 +82,21 @@ export const LandingPage: React.FC = () => {
           </p>
 
           <div className="flex items-center justify-center gap-4">
-            <Button variant="primary" size="lg" as="a" href="/upload">
+            <Link
+              to="/upload"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200"
+              style={{
+                background: 'var(--color-accent)',
+                color: '#000',
+                fontFamily: 'var(--font-sans)',
+              }}
+            >
               Try demo
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>
-            </Button>
+            </Link>
             <Button variant="ghost" size="lg" as="a" href="#developers">
               View docs
             </Button>
@@ -255,13 +263,21 @@ export const LandingPage: React.FC = () => {
             cadastral mapping across India.
           </p>
           <div className="flex items-center justify-center gap-4">
-            <Button variant="primary" size="lg" as="a" href="/upload">
+            <Link
+              to="/upload"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200"
+              style={{
+                background: 'var(--color-accent)',
+                color: '#000',
+                fontFamily: 'var(--font-sans)',
+              }}
+            >
               Try demo
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>
-            </Button>
+            </Link>
             <Button variant="ghost" size="lg">
               Contact sales
             </Button>
